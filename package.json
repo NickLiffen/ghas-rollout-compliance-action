@@ -1,7 +1,7 @@
 {
-  "name": "actions-name",
+  "name": "ghas-rollout-compliance-action",
   "version": "1.0.0",
-  "description": "actions-description",
+  "description": "A GitHub Action that helps organisations roll out GHAS in a controlled and structured fashion",
   "main": "main.ts",
   "scripts": {
     "build": "tsc && ncc build ./src/main.ts -o dist",
@@ -12,7 +12,7 @@
     "test": "jest --coverage",
     "prepare": "husky install",
     "start": "yarn run build && node ./dist/index.js",
-    "local": "yarn run build && act --job regression --env-file ./.env --eventpath .github/workflows/regression/payload.event --secret-file my.secrets"
+    "local": "yarn run build && act --job regression --env-file ./.env --eventpath .github/workflows/regression/payload.json --secret-file my.secrets"
   },
   "keywords": [],
   "author": "",

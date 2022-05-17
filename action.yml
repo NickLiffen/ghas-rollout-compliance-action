@@ -1,13 +1,13 @@
-name: 'Action Name'
+name: 'ghas-rollout-compliance-action'
 author: 'NickLiffen'
-description: 'Action Description'
+description: 'A GitHub Action that helps organisations roll out GHAS in a controlled and structured fashion'
 inputs:
-  inputName:
-    description: 'Input Description'
+  reposApprovedToUseGHASFile:
+    description: 'The file location of the file which contains the repos that can use GHAS'
     required: true
 outputs:
-  outputName:
-    description: 'Output Description'
+  success:
+    description: 'Wether or not the action ran successfully'
 runs:
   using: 'node16'
   main: 'dist/index.js'

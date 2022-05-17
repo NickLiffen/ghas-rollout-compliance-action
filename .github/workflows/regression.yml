@@ -26,14 +26,14 @@ jobs:
         name: "Test Action"
         uses: ./regression
         with: 
-          exampleInput: "${{ github.event.inputs.exampleInput }}"
+          exampleInput: "${{ github.event.inputs.reposApprovedToUseGHASFile }}"
 
 name: "Regression Testing"
 ? "on"
 : 
   workflow_dispatch: 
     inputs: 
-      exampleInput: 
-        default: xys
+      reposApprovedToUseGHASFile: 
+        default: ".github/workflows/regression/file-example.yml"
         description: "xyz"
         required: true
