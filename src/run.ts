@@ -46,7 +46,6 @@ const run = async (): Promise<void> => {
       core.info(`ret: ${JSON.stringify(res)}`)
     }
   } catch (error) {
-    core.info(JSON.stringify(error));
     core.setFailed(error instanceof Error ? error.message : JSON.stringify(error))
   }
 };
