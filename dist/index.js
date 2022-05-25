@@ -12476,8 +12476,13 @@ exports.getInputs = getInputs;
 const run = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const input = getInputs();
-        const reposFilter = (0, js_yaml_1.load)((0, fs_1.readFileSync)(input.file));
-        core.info(JSON.stringify(reposFilter));
+        const teams = (0, js_yaml_1.load)((0, fs_1.readFileSync)(input.file));
+        core.info(JSON.stringify(teams));
+        for (const team of teams) {
+            team.forEach((repo) => {
+                core.info(`${repo}`);
+            });
+        }
         const octokit = github.getOctokit(input.token);
         const orgRet = yield octokit.request(`GET /orgs/${input.org}/repos`);
         for (const repo of orgRet.data) {

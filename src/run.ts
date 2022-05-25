@@ -21,8 +21,13 @@ const run = async (): Promise<void> => {
   try {
     const input = getInputs();
 
-    const reposFilter = load(readFileSync(input.file));
-    core.info(JSON.stringify(reposFilter));
+    const teams = load(readFileSync(input.file));
+    core.info(JSON.stringify(teams));
+    for (const team of teams) {
+      team.forEach((repo) => {
+        core.info(`${repo}`);
+      })
+    }
 
     const octokit: ReturnType<typeof github.getOctokit> = github.getOctokit(input.token);
 
