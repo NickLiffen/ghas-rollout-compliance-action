@@ -8366,20 +8366,15 @@ exports.getInputs = getInputs;
 const run = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const input = getInputs();
-        core.info(`INPUTS ${JSON.stringify(input)}`);
         const octokit = github.getOctokit(input.token);
-        const orgRet = yield octokit.request(`GET /orgs/${input.org}/repos`, {
-            org: input.org
-        });
-        core.info(`ORGS: ${JSON.stringify(orgRet)}`);
+        const orgRet = yield octokit.request(`GET /orgs/${input.org}/repos`);
         for (const repo of orgRet.data) {
             core.info(`REPO: ${JSON.stringify(repo)}`);
             const res = yield octokit.request(`PATCH /repos/${input.org}/${repo}`, {
                 security_and_analysis: { advanced_security: { status: "enabled" } }
             });
-            core.info(`OK: ${JSON.stringify(res)}`);
+            core.info(`ret: ${JSON.stringify(res)}`);
         }
-        core.info(`Hello, ${input.org}!`);
     }
     catch (error) {
         core.info(JSON.stringify(error));

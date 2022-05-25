@@ -19,25 +19,17 @@ const run = async (): Promise<void> => {
   try {
     const input = getInputs();
 
-    core.info(`INPUTS ${JSON.stringify(input)}`)
-
     const octokit: ReturnType<typeof github.getOctokit> = github.getOctokit(input.token);
 
-    const orgRet = await octokit.request(`GET /orgs/${input.org}/repos`, {
-      org: input.org
-    });
-    core.info(`ORGS: ${JSON.stringify(orgRet)}`)
+    const orgRet = await octokit.request(`GET /orgs/${input.org}/repos`);
 
     for (const repo of orgRet.data) {
       core.info(`REPO: ${JSON.stringify(repo)}`);
       const res = await octokit.request(`PATCH /repos/${input.org}/${repo}`, {
         security_and_analysis: { advanced_security: { status: "enabled" } }
       });
-      core.info(`OK: ${JSON.stringify(res)}`)
+      core.info(`ret: ${JSON.stringify(res)}`)
     }
-
-
-    core.info(`Hello, ${input.org}!`);
   } catch (error) {
     core.info(JSON.stringify(error));
     core.setFailed(error instanceof Error ? error.message : JSON.stringify(error))
