@@ -12476,21 +12476,18 @@ exports.getInputs = getInputs;
 const run = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const input = getInputs();
-        input.file = 'repos.yml';
+        const reposAllowed = {};
         const teams = (0, js_yaml_1.load)((0, fs_1.readFileSync)(input.file));
         for (const [_, repos] of Object.entries(teams)) {
-            repos.forEach((repo) => {
-                core.info(`repo: ${repo}`);
-            });
+            repos.forEach((repo) => reposAllowed[repo] = true);
         }
         const octokit = github.getOctokit(input.token);
         const orgRet = yield octokit.request(`GET /orgs/${input.org}/repos`);
         for (const repo of orgRet.data) {
-            core.info(`REPO: ${JSON.stringify(repo)}`);
-            core.info(`PATCH /repos/${input.org}/${repo.name}`);
+            const status = reposAllowed[repo.name] ? 'enabled' : 'disabled';
             try {
                 const res = yield octokit.request(`PATCH /repos/${input.org}/${repo.name}`, {
-                    security_and_analysis: { advanced_security: { status: "enabled" } }
+                    security_and_analysis: { advanced_security: { status } }
                 });
                 core.info(`ret: ${JSON.stringify(res)}`);
             }
