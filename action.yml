@@ -16,7 +16,7 @@ inputs:
     required: false
   repo:
     description: The repo to use for the action
-    default: ${{ github.repository }}
+    default: ${{ github.repository_owner }}
     required: false
   file:
     description: The yaml file containing a list of repos
