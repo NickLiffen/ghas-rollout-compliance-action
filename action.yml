@@ -10,6 +10,14 @@ inputs:
     description: The GitHub token used to create an authenticated client
     default: ${{ github.token }}
     required: false
+  org:
+    description: The org to use for the action
+    default: ${{ github.organization }}
+    required: false
+  file:
+    description: The yaml file containing a list of repos
+    default: repos.yml
+    required: false
 
 runs:
   using: "node16"

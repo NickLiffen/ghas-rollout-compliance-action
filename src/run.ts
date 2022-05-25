@@ -3,11 +3,15 @@ import * as github from '@actions/github';
 
 interface Input {
   token: string;
+  org: string;
+  file: string;
 }
 
 export function getInputs(): Input {
   const result = {} as Input;
   result.token = core.getInput('github-token');
+  result.org = core.getInput('org');
+  result.file = core.getInput('file');
   return result;
 }
 
@@ -17,10 +21,10 @@ const run = async (): Promise<void> => {
     const octokit: ReturnType<typeof github.getOctokit> = github.getOctokit(input.token);
 
     const org = 'austenstone';
-    const repo = 'test-action';
+    const repo = 'ghas-rollout-compliance-action';
 
-    const orgs = await octokit.request('GET /orgs/${org}/repos', {
-      org: 'ORG'
+    const orgs = await octokit.request(`GET /orgs/${org}/repos`, {
+      org: input.org
     });
     core.info(`${JSON.stringify(orgs)}`)
 

@@ -8358,6 +8358,8 @@ const github = __importStar(__nccwpck_require__(5438));
 function getInputs() {
     const result = {};
     result.token = core.getInput('github-token');
+    result.org = core.getInput('org');
+    result.file = core.getInput('file');
     return result;
 }
 exports.getInputs = getInputs;
@@ -8366,9 +8368,9 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         const input = getInputs();
         const octokit = github.getOctokit(input.token);
         const org = 'austenstone';
-        const repo = 'test-action';
-        const orgs = yield octokit.request('GET /orgs/${org}/repos', {
-            org: 'ORG'
+        const repo = 'ghas-rollout-compliance-action';
+        const orgs = yield octokit.request(`GET /orgs/${org}/repos`, {
+            org: input.org
         });
         core.info(`${JSON.stringify(orgs)}`);
         const res = yield octokit.request(`PATCH /repos/${org}/${repo}`, {
