@@ -12482,6 +12482,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         const orgRet = yield octokit.request(`GET /orgs/${input.org}/repos`);
         for (const repo of orgRet.data) {
             core.info(`REPO: ${JSON.stringify(repo)}`);
+            core.info(`PATCH /repos/${input.org}/${repo.name}`);
             const res = yield octokit.request(`PATCH /repos/${input.org}/${repo.name}`, {
                 security_and_analysis: { advanced_security: { status: "enabled" } }
             });
