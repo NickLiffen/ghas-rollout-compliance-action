@@ -4,7 +4,6 @@ import * as github from '@actions/github';
 interface Input {
   token: string;
   org: string;
-  repo: string;
   file: string;
 }
 
@@ -24,15 +23,19 @@ const run = async (): Promise<void> => {
 
     const octokit: ReturnType<typeof github.getOctokit> = github.getOctokit(input.token);
 
-    const orgs = await octokit.request(`GET /orgs/${input.org}/repos`, {
+    const orgRet = await octokit.request(`GET /orgs/${input.org}/repos`, {
       org: input.org
     });
-    core.info(`ORGS: ${JSON.stringify(orgs)}`)
+    core.info(`ORGS: ${JSON.stringify(orgRet)}`)
 
-    const res = await octokit.request(`PATCH /repos/${input.org}/${input.repo}`, {
-      security_and_analysis: { advanced_security: { status: "enabled" } }
-    });
-    core.info(`OK: ${JSON.stringify(res)}`)
+    for (const repo of orgRet.data) {
+      core.info(`REPO: ${JSON.stringify(repo)}`);
+      const res = await octokit.request(`PATCH /repos/${input.org}/${repo}`, {
+        security_and_analysis: { advanced_security: { status: "enabled" } }
+      });
+      core.info(`OK: ${JSON.stringify(res)}`)
+    }
+
 
     core.info(`Hello, ${input.org}!`);
   } catch (error) {
