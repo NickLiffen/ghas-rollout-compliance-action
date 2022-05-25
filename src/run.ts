@@ -9,6 +9,10 @@ interface Input {
   file: string;
 }
 
+interface teamType {
+  [key: string]: string[];
+}
+
 export function getInputs(): Input {
   const result = {} as Input;
   result.token = core.getInput('github-token');
@@ -21,12 +25,12 @@ const run = async (): Promise<void> => {
   try {
     const input = getInputs();
 
-    const teams = load(readFileSync(input.file));
-    core.info(JSON.stringify(teams));
-    for (const team of teams) {
-      team.forEach((repo) => {
-        core.info(`${repo}`);
-      })
+    input.file = 'repos.yml';
+    const teams: teamType = load(readFileSync(input.file));
+    for (const [_, repos] of Object.entries(teams)) {
+      repos.forEach((repo) => {
+        core.info(`repo: ${repo}`);
+      });
     }
 
     const octokit: ReturnType<typeof github.getOctokit> = github.getOctokit(input.token);

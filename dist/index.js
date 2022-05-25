@@ -12476,11 +12476,11 @@ exports.getInputs = getInputs;
 const run = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const input = getInputs();
+        input.file = 'repos.yml';
         const teams = (0, js_yaml_1.load)((0, fs_1.readFileSync)(input.file));
-        core.info(JSON.stringify(teams));
-        for (const team of teams) {
-            team.forEach((repo) => {
-                core.info(`${repo}`);
+        for (const [_, repos] of Object.entries(teams)) {
+            repos.forEach((repo) => {
+                core.info(`repo: ${repo}`);
             });
         }
         const octokit = github.getOctokit(input.token);
