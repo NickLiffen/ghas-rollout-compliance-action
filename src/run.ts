@@ -1,5 +1,7 @@
 import * as core from '@actions/core';
 import * as github from '@actions/github';
+import { load } from "js-yaml";
+import { readFileSync } from "fs";
 
 interface Input {
   token: string;
@@ -18,6 +20,9 @@ export function getInputs(): Input {
 const run = async (): Promise<void> => {
   try {
     const input = getInputs();
+
+    const reposFilter = load(readFileSync(input.file));
+    core.info(JSON.stringify(reposFilter));
 
     const octokit: ReturnType<typeof github.getOctokit> = github.getOctokit(input.token);
 
