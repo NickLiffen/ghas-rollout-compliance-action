@@ -12486,10 +12486,10 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         for (const repo of orgRet.data) {
             const status = reposAllowed[repo.name] ? 'enabled' : 'disabled';
             try {
-                const res = yield octokit.request(`PATCH /repos/${input.org}/${repo.name}`, {
+                yield octokit.request(`PATCH /repos/${input.org}/${repo.name}`, {
                     security_and_analysis: { advanced_security: { status } }
                 });
-                core.info(`ret: ${JSON.stringify(res)}`);
+                core.info(`${input.org}/${repo.name}: ${status}`);
             }
             catch (error) {
                 core.warning(error instanceof Error ? error.message : JSON.stringify(error));

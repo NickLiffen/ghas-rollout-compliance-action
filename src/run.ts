@@ -9,10 +9,6 @@ interface Input {
   file: string;
 }
 
-interface teamType {
-  [key: string]: string[];
-}
-
 export function getInputs(): Input {
   const result = {} as Input;
   result.token = core.getInput('github-token');
@@ -26,7 +22,9 @@ const run = async (): Promise<void> => {
     const input = getInputs();
 
     const reposAllowed = {};
-    const teams: teamType = load(readFileSync(input.file));
+    const teams: {
+      [key: string]: string[];
+    } = load(readFileSync(input.file));
     for (const [_, repos] of Object.entries(teams)) {
       repos.forEach((repo) => reposAllowed[repo] = true);
     }
@@ -34,14 +32,13 @@ const run = async (): Promise<void> => {
     const octokit: ReturnType<typeof github.getOctokit> = github.getOctokit(input.token);
 
     const orgRet = await octokit.request(`GET /orgs/${input.org}/repos`);
-
     for (const repo of orgRet.data) {
       const status = reposAllowed[repo.name] ? 'enabled' : 'disabled';
       try {
-        const res = await octokit.request(`PATCH /repos/${input.org}/${repo.name}`, {
+        await octokit.request(`PATCH /repos/${input.org}/${repo.name}`, {
           security_and_analysis: { advanced_security: { status } }
         });
-        core.info(`ret: ${JSON.stringify(res)}`)
+        core.info(`${input.org}/${repo.name}: ${status}`);
       } catch (error) {
         core.warning(error instanceof Error ? error.message : JSON.stringify(error));
       }
