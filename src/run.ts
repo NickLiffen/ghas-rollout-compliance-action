@@ -18,6 +18,8 @@ export function getInputs(): Input {
 const run = async (): Promise<void> => {
   try {
     const input = getInputs();
+    core.debug(`INPUTS ${JSON.stringify(input)}`)
+
     const octokit: ReturnType<typeof github.getOctokit> = github.getOctokit(input.token);
 
     const org = 'austenstone';
@@ -26,15 +28,16 @@ const run = async (): Promise<void> => {
     const orgs = await octokit.request(`GET /orgs/${org}/repos`, {
       org: input.org
     });
-    core.info(`${JSON.stringify(orgs)}`)
+    core.debug(`${JSON.stringify(orgs)}`)
 
     const res = await octokit.request(`PATCH /repos/${org}/${repo}`, {
       security_and_analysis: { advanced_security: { status: "enabled" } }
     });
-    core.info(`${JSON.stringify(res)}`)
+    core.debug(`${JSON.stringify(res)}`)
 
-    core.info(`Hello, ${org}!`);
+    core.debug(`Hello, ${org}!`);
   } catch (error) {
+    core.debug(JSON.stringify(error));
     core.setFailed(error instanceof Error ? error.message : JSON.stringify(error))
   }
 };

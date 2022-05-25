@@ -8366,20 +8366,22 @@ exports.getInputs = getInputs;
 const run = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const input = getInputs();
+        core.debug(`INPUTS ${JSON.stringify(input)}`);
         const octokit = github.getOctokit(input.token);
         const org = 'austenstone';
         const repo = 'ghas-rollout-compliance-action';
         const orgs = yield octokit.request(`GET /orgs/${org}/repos`, {
             org: input.org
         });
-        core.info(`${JSON.stringify(orgs)}`);
+        core.debug(`${JSON.stringify(orgs)}`);
         const res = yield octokit.request(`PATCH /repos/${org}/${repo}`, {
             security_and_analysis: { advanced_security: { status: "enabled" } }
         });
-        core.info(`${JSON.stringify(res)}`);
-        core.info(`Hello, ${org}!`);
+        core.debug(`${JSON.stringify(res)}`);
+        core.debug(`Hello, ${org}!`);
     }
     catch (error) {
+        core.debug(JSON.stringify(error));
         core.setFailed(error instanceof Error ? error.message : JSON.stringify(error));
     }
 });
