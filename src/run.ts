@@ -19,6 +19,7 @@ export function getInputs(): Input {
 const run = async (): Promise<void> => {
   try {
     const input = getInputs();
+    
     core.debug(`INPUTS ${JSON.stringify(input)}`)
 
     const octokit: ReturnType<typeof github.getOctokit> = github.getOctokit(input.token);
