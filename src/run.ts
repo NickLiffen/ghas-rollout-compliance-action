@@ -25,7 +25,7 @@ const run = async (): Promise<void> => {
 
     for (const repo of orgRet.data) {
       core.info(`REPO: ${JSON.stringify(repo)}`);
-      const res = await octokit.request(`PATCH /repos/${input.org}/${repo}`, {
+      const res = await octokit.request(`PATCH /repos/${input.org}/${repo.name}`, {
         security_and_analysis: { advanced_security: { status: "enabled" } }
       });
       core.info(`ret: ${JSON.stringify(res)}`)
