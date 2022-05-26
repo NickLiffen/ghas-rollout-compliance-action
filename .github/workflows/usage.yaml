@@ -1,4 +1,4 @@
-name: TypeScript Action Workflow
+name: GHAS Rollout Compliance
 on:
   push:
   pull_request:

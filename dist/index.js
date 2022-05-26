@@ -12498,8 +12498,21 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
                 core.warning(error instanceof Error ? error.message : JSON.stringify(error));
             }
         }
+        const ghasCommitters = {};
         const billingRet = yield octokit.request(`GET /orgs/${input.org}/settings/billing/advanced-security`);
         core.info(JSON.stringify(billingRet));
+        billingRet.data.repositories.forEach((repo) => {
+            const repoName = repo.name.split('/')[1];
+            if (reposAllowed[repoName]) {
+                repo.advanced_security_committers_breakdown.forEach((committer) => {
+                    if (!ghasCommitters[repoName]) {
+                        ghasCommitters[repoName] = {};
+                    }
+                    ghasCommitters[repoName][committer.user_login] = true;
+                });
+            }
+        });
+        core.info(JSON.stringify(ghasCommitters));
     }
     catch (error) {
         core.setFailed(error instanceof Error ? error.message : JSON.stringify(error));
