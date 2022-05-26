@@ -7,6 +7,7 @@ interface Input {
   token: string;
   org: string;
   file: string;
+  forceEnable: boolean;
 }
 
 export function getInputs(): Input {
@@ -14,6 +15,7 @@ export function getInputs(): Input {
   result.token = core.getInput('github-token');
   result.org = core.getInput('org');
   result.file = core.getInput('file');
+  result.forceEnable = core.getBooleanInput('force-enable');
   return result;
 }
 
@@ -34,6 +36,7 @@ const run = async (): Promise<void> => {
     const orgRet = await octokit.request(`GET /orgs/${input.org}/repos`);
     for (const repo of orgRet.data) {
       const status = reposAllowed[repo.name] ? 'enabled' : 'disabled';
+      if (input.forceEnable === false && status === 'enabled') continue;
       try {
         await octokit.request(`PATCH /repos/${input.org}/${repo.name}`, {
           security_and_analysis: { advanced_security: { status } }
@@ -43,6 +46,10 @@ const run = async (): Promise<void> => {
         core.warning(error instanceof Error ? error.message : JSON.stringify(error));
       }
     }
+
+    
+    const billingRet = await octokit.request(`GET /orgs/${input.org}/settings/billing/advanced-security`);
+    core.info(JSON.stringify(billingRet));
   } catch (error) {
     core.setFailed(error instanceof Error ? error.message : JSON.stringify(error))
   }
