@@ -1,4 +1,4 @@
-# GHAS Rollout Compliance➕
+# GHAS Rollout Compliance
 
 This GitHub [action](https://docs.github.com/en/actions) acts as a compliance mechanism for GHAS. The action will disable GHAS for all repositories not included in a list.
 
