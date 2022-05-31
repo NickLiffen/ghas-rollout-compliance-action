@@ -87,12 +87,11 @@ const run = async (): Promise<void> => {
     const teams: {
       [key: string]: string[];
     } = load(readFileSync(input.file));
-    for (const [_, repos] of Object.entries(teams)) {
+    for (const [,repos] of Object.entries(teams)) {
       repos.forEach((repo) => reposAllowed[repo] = true);
     }
 
     const octokit = createOctokit(input.token);
-
     
     const repoNames = await core.group('Get Repo Names', () => getRepoNames(octokit, input.org)
       .then((repoNames) => {
@@ -114,35 +113,6 @@ const run = async (): Promise<void> => {
         core.warning(error instanceof Error ? error.message : JSON.stringify(error));
       }
     }
-
-    const repoGhasCommitters = {};
-    const billingRet = await octokit.request(`GET /orgs/${input.org}/settings/billing/advanced-security`);
-    core.info(JSON.stringify(billingRet));
-    
-    billingRet.data.repositories.forEach((repo) => {
-      const repoName = repo.name.split('/')[1];
-      if (reposAllowed[repoName]) {
-        repo.advanced_security_committers_breakdown.forEach((committer) => {
-          if (!repoGhasCommitters[repoName]) {
-            repoGhasCommitters[repoName] = {};
-          }
-          repoGhasCommitters[repoName][committer.user_login] = true;
-        });
-      }
-    });
-    core.info(JSON.stringify(repoGhasCommitters));
-    
-    const teamCommitterCounts = {};
-    for (const [team, repos] of Object.entries(teams)) {
-      repos.forEach((repo) => {
-        const repoCommitters = repoGhasCommitters[repo];
-        if (repoCommitters) {
-          teamCommitterCounts[team] = Object.keys(repoCommitters).length;
-        }
-      });
-    }
-    core.info(JSON.stringify(teamCommitterCounts));
-
   } catch (error) {
     core.setFailed(error instanceof Error ? error.message : JSON.stringify(error))
   }
