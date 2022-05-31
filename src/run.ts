@@ -2,6 +2,7 @@ import * as core from '@actions/core';
 import { load } from "js-yaml";
 import { readFileSync } from "fs";
 import { throttling } from '@octokit/plugin-throttling';
+import { Organization } from "@octokit/graphql-schema";
 import { GitHub, getOctokitOptions } from '@actions/github/lib/utils'
 type Octokit = InstanceType<typeof GitHub>;
 
@@ -24,7 +25,7 @@ export function getInputs(): Input {
 const getRepoNames = async (octokit: Octokit, orgLogin: string): Promise<string[]> => {
   let repoNames: string[] = [];
   let _hasNextPage = true;
-  let _endCursor = null;
+  let _endCursor;
   while (_hasNextPage) {
     const {
       organization: {
@@ -36,7 +37,7 @@ const getRepoNames = async (octokit: Octokit, orgLogin: string): Promise<string[
           }
         }
       }
-    } = await octokit.graphql(`{ 
+    }: { organization: Organization } = await octokit.graphql(`{ 
       organization(login:"${orgLogin}") {
         repositories(first:100, after:${JSON.stringify(_endCursor)}) {
           nodes {
@@ -51,11 +52,17 @@ const getRepoNames = async (octokit: Octokit, orgLogin: string): Promise<string[
     }`);
     _hasNextPage = hasNextPage;
     _endCursor = endCursor;
-    const names: string[] = repositories
-      .map(repo => repo.name)
-      .filter(name => name !== orgLogin);
-    core.info(names.join('\n'));
-    repoNames = repoNames.concat(names);
+    if (repositories) {
+      const names: string[] = repositories
+        .reduce((list, repo) => {
+          if (repo != undefined && repo.name !== orgLogin) {
+            list.push(repo.name);
+          }
+          return list;
+        }, [] as string[]);
+      core.info(names.join('\n'));
+      repoNames = repoNames.concat(names);
+    }
   }
   return repoNames;
 }
@@ -93,14 +100,10 @@ const run = async (): Promise<void> => {
 
     const octokit = createOctokit(input.token);
     
-    const repoNames = await core.group('Get Repo Names', () => getRepoNames(octokit, input.org)
-      .then((repoNames) => {
-        core.setOutput('repos', JSON.stringify(repoNames));
-        return repoNames;
-      })
-    );
+    const repoNames = await core.group('Get Repo Names', () => getRepoNames(octokit, input.org));
     core.info(`${repoNames.length} repositories found`);
 
+    const changedRepos: string[] = [];
     for (const repo of repoNames) {
       const status = reposAllowed[repo] ? 'enabled' : 'disabled';
       if (input.forceEnable === false && status === 'enabled') continue;
@@ -109,10 +112,12 @@ const run = async (): Promise<void> => {
           security_and_analysis: { advanced_security: { status } }
         });
         core.info(`${input.org}/${repo}: ${status}`);
+        changedRepos.push(repo);
       } catch (error) {
         core.warning(error instanceof Error ? error.message : JSON.stringify(error));
       }
     }
+    core.setOutput('repos', changedRepos);
   } catch (error) {
     core.setFailed(error instanceof Error ? error.message : JSON.stringify(error))
   }

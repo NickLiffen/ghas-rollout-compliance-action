@@ -14268,7 +14268,7 @@ exports.getInputs = getInputs;
 const getRepoNames = (octokit, orgLogin) => __awaiter(void 0, void 0, void 0, function* () {
     let repoNames = [];
     let _hasNextPage = true;
-    let _endCursor = null;
+    let _endCursor;
     while (_hasNextPage) {
         const { organization: { repositories: { nodes: repositories, pageInfo: { hasNextPage, endCursor } } } } = yield octokit.graphql(`{ 
       organization(login:"${orgLogin}") {
@@ -14285,11 +14285,17 @@ const getRepoNames = (octokit, orgLogin) => __awaiter(void 0, void 0, void 0, fu
     }`);
         _hasNextPage = hasNextPage;
         _endCursor = endCursor;
-        const names = repositories
-            .map(repo => repo.name)
-            .filter(name => name !== orgLogin);
-        core.info(names.join('\n'));
-        repoNames = repoNames.concat(names);
+        if (repositories) {
+            const names = repositories
+                .reduce((list, repo) => {
+                if (repo != undefined && repo.name !== orgLogin) {
+                    list.push(repo.name);
+                }
+                return list;
+            }, []);
+            core.info(names.join('\n'));
+            repoNames = repoNames.concat(names);
+        }
     }
     return repoNames;
 });
