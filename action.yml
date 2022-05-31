@@ -14,13 +14,13 @@ inputs:
     description: The org to use for the action
     default: ${{ github.event.organization.login }}
     required: false
-  repo:
-    description: The repo to use for the action
-    default: ${{ github.event.repository.name }}
-    required: false
   file:
-    description: The yaml file containing a list of repos
+    description: The yaml file containing a list of repos that are allowed GHAS
     default: repos.yml
+    required: false
+  force-enable:
+    description: Force enable GHAS for all repos in the file
+    default: false
     required: false
 
 runs:
