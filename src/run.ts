@@ -90,7 +90,7 @@ const run = async (): Promise<void> => {
   try {
     const input = getInputs();
 
-    const reposAllowed = {};
+    const reposAllowed = {} as Input;
     const teams: {
       [key: string]: string[];
     } = load(readFileSync(input.file));
@@ -117,7 +117,7 @@ const run = async (): Promise<void> => {
         core.warning(error instanceof Error ? error.message : JSON.stringify(error));
       }
     }
-    core.setOutput('repos', changedRepos);
+    core.setOutput('repos', JSON.stringify(changedRepos));
   } catch (error) {
     core.setFailed(error instanceof Error ? error.message : JSON.stringify(error))
   }

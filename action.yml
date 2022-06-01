@@ -23,6 +23,10 @@ inputs:
     default: false
     required: false
 
+outputs:
+  repos:
+    description: The repos that were modified
+
 runs:
   using: "node16"
   main: "dist/index.js"
