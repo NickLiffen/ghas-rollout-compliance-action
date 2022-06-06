@@ -1,0 +1,5 @@
+TeamA:
+  - ghas-rollout-compliance-action
+  - Repo1
+TeamB:
+  - Repo2
