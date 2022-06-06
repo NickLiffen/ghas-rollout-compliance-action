@@ -10,6 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - run: |
+        echo "TeamA:
+          - ghas-rollout-compliance-action
+          - Repo1
+        TeamB:
+          - Repo2" > repos.yml
       - uses: ./
         with:
           github-token: ${{ secrets.MY_TOKEN }}
