@@ -1,4 +1,4 @@
-name: GHAS Rollout Compliance
+name: Usage
 on:
   push:
   pull_request:
