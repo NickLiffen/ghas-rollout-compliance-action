@@ -25,7 +25,7 @@ export function getInputs(): Input {
 const getRepoNames = async (octokit: Octokit, orgLogin: string): Promise<string[]> => {
   let repoNames: string[] = [];
   let _hasNextPage = true;
-  let _endCursor;
+  let _endCursor = null;
   while (_hasNextPage) {
     const {
       organization: {
