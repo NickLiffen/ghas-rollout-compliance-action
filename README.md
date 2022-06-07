@@ -1,42 +1,54 @@
-# GitHub Actions Boilerplate
+# GHAS Rollout Compliance
 
-## Introduction
+This GitHub [action](https://docs.github.com/en/actions) acts as a compliance mechanism for GHAS. The action will disable GHAS for all repositories not included in a list.
 
-A sample GitHub action boilerplate for Typescript actions. 
+## Usage
+Create a workflow (eg: `.github/workflows/ghas-compliance.yml`). See [Creating a Workflow file](https://help.github.com/en/articles/configuring-a-workflow#creating-a-workflow-file).
 
-It comes with:
-- **Node 16 Support**: Current LTS. 
-- **ESlint and Prettier**: Code quality and consistency tooling. 
-- **Husky**: Pre-commit hook ensuring code is built before being deployed to GitHub. 
+You will need to [create a PAT(Personal Access Token)](https://github.com/settings/tokens/new?scopes=admin:org) that has `admin:org` access so we can read/write to the project.
 
-There are many open source actions boilerplates/templates. I use this one as I try and keep it up to date and simplistic. 
+Add this PAT as a secret so we can use it as input `github-token`, see [Creating encrypted secrets for a repository](https://docs.github.com/en/enterprise-cloud@latest/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-a-repository).
 
-## Getting Started
+Another option is to use something like [tibdex/github-app-token](https://github.com/tibdex/github-app-token) to get a token during the workflow.
 
-Click [Use this template](https://github.com/NickLiffen/actions-boilerplate/generate) on this repository. Enter in your action repository name and description, and click *Create repository from template*. 
+### Organizations
 
-Close down locally, and run:
+If your project is part of an organization that has SAML enabled you must authorize the PAT, see [Authorizing a personal access token for use with SAML single sign-on](https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on).
 
+### Example
+```yml
+name: GHAS Rollout Compliance
+on:
+  - cron:  '30 5,17 * * *'
+
+jobs:
+  run:
+    name: Rollout Compliance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: NickLiffen/ghas-rollout-compliance-action@main
+        with:
+          github-token: ${{ secrets.MY_TOKEN }}
 ```
-yarn install --frozen-lockfile && yarn run build
+
+#### Repository File
+You must have a file `repos.yml` which contains the list of repositories that are allowed to use GHAS. All repositories not in this list will have GHAS disabled.
+```yml
+TeamA:
+  - demo-repository
+TeamB:
+  - demo-repository2
 ```
 
-Edit the required fields within the `package.json` and `action.yml` and you should be good to go. Simply start writing code within the `src` directory. 
+## Input Settings
+Various inputs are defined in [`action.yml`](action.yml):
 
-## Testing Locally
+| Name | Description | Default |
+| --- | - | - |
+| github-token | Token to use to authorize. This should be a personal access token. | ${{&nbsp;github.token&nbsp;}} |
+| org | The organization that owns of the project. | _the repository owner_
+| file | The yaml file containing a list of repos that are allowed GHAS. | repos.yml
+| force-enable | Force enable GHAS for all repos in the file. | false
 
-We use [act](https://github.com/nektos/act) to test our actions locally. If you are interested in testing your action locally, you will need to do a few things:
-
-1. Create a `my.secrets` file. This file will contain all the secrets required in your workflow to test this action.
-2. Create a `.env.` within the root of this repository. This file will contain any environment variables required in your workflow to test this action.
-3. Update the `.github/workflows/regression.yml` file to test your action. This will include updating any `events` in the workflow and inputs. 
-4. Update the `.github/workflows/regression/payload.yml` file, which contains the input payload for your action. 
-
-Once you have done the above, you are ready to test locally and run `yarn run local`. This will trigger `act` to run your workflow and, therefore, your action. 
-
-For more information on how to use act, see the instructions here: [Act Overview](https://github.com/nektos/act/blob/master/README.md). 
-
-## Contrubting?
-
-Simply raise a pull request :) Make sure CI passes and then you should be good to go.
-
+## References
+- []()

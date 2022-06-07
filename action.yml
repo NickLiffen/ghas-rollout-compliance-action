@@ -1,16 +1,32 @@
-name: 'ghas-rollout-compliance-action'
-author: 'NickLiffen'
-description: 'A GitHub Action that helps organisations roll out GHAS in a controlled and structured fashion'
-inputs:
-  reposApprovedToUseGHASFile:
-    description: 'The file location of the file which contains the repos that can use GHAS'
-    required: true
-outputs:
-  success:
-    description: 'Wether or not the action ran successfully'
-runs:
-  using: 'node16'
-  main: 'dist/index.js'
+name: TypeScript Action
+author: Austen Stone
+description: A TypeScript Action
 branding:
-  icon: 'target'  
-  color: 'blue'
+  icon: "plus"
+  color: "blue"
+
+inputs:
+  github-token:
+    description: The GitHub token used to create an authenticated client
+    default: ${{ github.token }}
+    required: false
+  org:
+    description: The org to use for the action
+    default: ${{ github.event.organization.login }}
+    required: false
+  file:
+    description: The yaml file containing a list of repos that are allowed GHAS
+    default: repos.yml
+    required: false
+  force-enable:
+    description: Force enable GHAS for all repos in the file
+    default: false
+    required: false
+
+outputs:
+  repos:
+    description: The repos that were modified
+
+runs:
+  using: "node16"
+  main: "dist/index.js"

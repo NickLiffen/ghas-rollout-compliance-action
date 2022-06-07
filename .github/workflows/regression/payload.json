@@ -1,6 +1,0 @@
-{
-  "action": "workflow_dispatch",
-  "inputs": {
-      "reposApprovedToUseGHASFile": ".github/workflows/regression/file-example.yml"
-  }
-}
