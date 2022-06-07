@@ -108,9 +108,11 @@ const run = async (): Promise<void> => {
       const status = reposAllowed[repo] ? 'enabled' : 'disabled';
       if (input.forceEnable === false && status === 'enabled') continue;
       try {
-        await octokit.request(`PATCH /repos/${input.org}/${repo}`, {
-          security_and_analysis: { advanced_security: { status } }
-        });
+        if (process.env.DRY_RUN != undefined) {
+          await octokit.request(`PATCH /repos/${input.org}/${repo}`, {
+            security_and_analysis: { advanced_security: { status } }
+          });
+        }
         core.info(`${input.org}/${repo}: ${status}`);
         changedRepos.push(repo);
       } catch (error) {
