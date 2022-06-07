@@ -25,7 +25,7 @@ export function getInputs(): Input {
 const getRepoNames = async (octokit: Octokit, orgLogin: string): Promise<string[]> => {
   let repoNames: string[] = [];
   let _hasNextPage = true;
-  let _endCursor = null;
+  let _endCursor;
   while (_hasNextPage) {
     const {
       organization: {
@@ -39,7 +39,7 @@ const getRepoNames = async (octokit: Octokit, orgLogin: string): Promise<string[
       }
     }: { organization: Organization } = await octokit.graphql(`{ 
       organization(login:"${orgLogin}") {
-        repositories(first:100, after:${JSON.stringify(_endCursor)}) {
+        repositories(first:100, after:${_endCursor ? JSON.stringify(_endCursor) : 'null'}) {
           nodes {
             name
           }

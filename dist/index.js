@@ -14664,7 +14664,7 @@ const getRepoNames = (octokit, orgLogin) => __awaiter(void 0, void 0, void 0, fu
     while (_hasNextPage) {
         const { organization: { repositories: { nodes: repositories, pageInfo: { hasNextPage, endCursor } } } } = yield octokit.graphql(`{ 
       organization(login:"${orgLogin}") {
-        repositories(first:100, after:${JSON.stringify(_endCursor)}) {
+        repositories(first:100, after:${_endCursor ? JSON.stringify(_endCursor) : 'null'}) {
           nodes {
             name
           }
